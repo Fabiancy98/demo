@@ -44,8 +44,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     types: ['https://schema.org/Book', 'https://schema.org/Offer'],
     operations: [
         new GetCollection(
-            itemUriTemplate: '/admin/books/{id}{._format}',
-            paginationClientItemsPerPage: true
+            paginationClientItemsPerPage: true,
+            itemUriTemplate: '/admin/books/{id}{._format}'
         ),
         new Post(
             processor: BookPersistProcessor::class,
@@ -72,13 +72,13 @@ use Symfony\Component\Validator\Constraints as Assert;
         AbstractNormalizer::GROUPS => ['Book:write'],
     ],
     collectDenormalizationErrors: true,
-    security: 'is_granted("OIDC_ADMIN")',
     mercure: [
         'topics' => [
             '@=iri(object, ' . UrlGeneratorInterface::ABS_URL . ', get_operation(object, "/admin/books/{id}{._format}"))',
             '@=iri(object, ' . UrlGeneratorInterface::ABS_URL . ', get_operation(object, "/books/{id}{._format}"))',
         ],
-    ]
+    ],
+    security: 'is_granted("OIDC_ADMIN")'
 )]
 #[ApiResource(
     types: ['https://schema.org/Book', 'https://schema.org/Offer'],
@@ -117,8 +117,8 @@ class Book
      * @see https://schema.org/itemOffered
      */
     #[ApiProperty(
-        types: ['https://schema.org/itemOffered', 'https://purl.org/dc/terms/BibliographicResource'],
-        example: 'https://openlibrary.org/books/OL2055137M.json'
+        example: 'https://openlibrary.org/books/OL2055137M.json',
+        types: ['https://schema.org/itemOffered', 'https://purl.org/dc/terms/BibliographicResource']
     )]
     #[Assert\NotBlank(allowNull: false)]
     #[Assert\Url(protocols: ['https'], requireTld: true)]
@@ -133,8 +133,8 @@ class Book
     #[ApiFilter(OrderFilter::class)]
     #[ApiFilter(SearchFilter::class, strategy: 'i' . SearchFilterInterface::STRATEGY_PARTIAL)]
     #[ApiProperty(
-        iris: ['https://schema.org/name'],
-        example: 'Hyperion'
+        example: 'Hyperion',
+        iris: ['https://schema.org/name']
     )]
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read', 'Review:read:admin'])]
     #[ORM\Column(type: Types::TEXT)]
@@ -145,8 +145,8 @@ class Book
      */
     #[ApiFilter(SearchFilter::class, strategy: 'i' . SearchFilterInterface::STRATEGY_PARTIAL)]
     #[ApiProperty(
-        types: ['https://schema.org/author'],
-        example: 'Dan Simmons'
+        example: 'Dan Simmons',
+        types: ['https://schema.org/author']
     )]
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read', 'Review:read:admin'])]
     #[ORM\Column(nullable: true)]
@@ -157,8 +157,8 @@ class Book
      */
     #[ApiFilter(SearchFilter::class, strategy: SearchFilterInterface::STRATEGY_EXACT)]
     #[ApiProperty(
-        types: ['https://schema.org/OfferItemCondition'],
-        example: BookCondition::NewCondition->value
+        example: BookCondition::NewCondition->value,
+        types: ['https://schema.org/OfferItemCondition']
     )]
     #[Assert\NotNull]
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read', 'Book:write'])]
@@ -173,8 +173,8 @@ class Book
      * @see https://schema.org/reviews
      */
     #[ApiProperty(
-        types: ['https://schema.org/reviews'],
         example: '/books/6acacc80-8321-4d83-9b02-7f2c7bf6eb1d/reviews',
+        types: ['https://schema.org/reviews'],
         uriTemplate: '/books/{bookId}/reviews{._format}'
     )]
     #[Groups(groups: ['Book:read', 'Bookmark:read'])]
@@ -187,8 +187,8 @@ class Book
      * @see https://schema.org/aggregateRating
      */
     #[ApiProperty(
-        types: ['https://schema.org/aggregateRating'],
-        example: 1
+        example: 1,
+        types: ['https://schema.org/aggregateRating']
     )]
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read'])]
     public ?int $rating = null;
@@ -201,5 +201,10 @@ class Book
     public function getId(): Uuid
     {
         return $this->id;
+    }
+
+    public function getBook(): string
+    {
+        return $this->book;
     }
 }
